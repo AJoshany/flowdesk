@@ -1,26 +1,154 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ================================
+     Secondary Color
+     ================================ */
+
+  --heading: #3f434a;
+  --body-light: #8a9099;
+  --body-dark: #1e1f2d;
+  --grey: #c6c9cc;
+  --border: #e8e9eb;
+  --bg: #f8f8f8;
+  --white: #ffffff;
+
+  /* ================================
+     Primary Color
+     ================================ */
+
+  --primary-accent: #02472e;
+  --primary-light: #45c9b2;
+
+  /* ================================
+     Supporting Color
+     ================================ */
+
+  --red: #fd7972;
+  --yellow: #ffd240;
+  --blue: #22cce2;
+  --green: #aee553;
+  --dark-green: #49c96d;
+  --dark-orange: #fd7972;
+  --dark-yellow: #ffd240;
+  --dark-red: #fd7972;
+  --dark-blue: #22cce2;
+  --purple: #b656eb;
+  --pink: #fd72de;
+
+  /* Font */
+  --poppins: "Poppins", sans-serif;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colors */
+
+  --color-heading: var(--heading);
+  --color-body-light: var(--body-light);
+  --color-body-dark: var(--body-dark);
+  --color-grey: var(--grey);
+  --color-border: var(--border);
+  --color-bg: var(--bg);
+  --color-white: var(--white);
+
+  --color-primary-accent: var(--primary-accent);
+  --color-primary-light: var(--primary-light);
+
+  --color-red: var(--red);
+  --color-yellow: var(--yellow);
+  --color-blue: var(--blue);
+  --color-green: var(--green);
+  --color-dark-green: var(--dark-green);
+  --color-dark-orange: var(--dark-orange);
+  --color-dark-yellow: var(--dark-yellow);
+  --color-dark-red: var(--dark-red);
+  --color-dark-blue: var(--dark-blue);
+  --color-purple: var(--purple);
+  --color-pink: var(--pink);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  /* ================================
+     Font
+     ================================ */
+
+  --font-poppins: "Poppins", sans-serif;
+
+  /* ================================
+     Headings
+     ================================ */
+
+  --text-h1: 56px;
+  --text-h1--line-height: 84px;
+  --text-h1--font-weight: 500;
+
+  --text-h2: 48px;
+  --text-h2--line-height: 72px;
+  --text-h2--font-weight: 500;
+
+  --text-h3: 36px;
+  --text-h3--line-height: 54px;
+  --text-h3--font-weight: 500;
+
+  --text-h4: 28px;
+  --text-h4--line-height: 42px;
+  --text-h4--font-weight: 500;
+
+  --text-h5: 20px;
+  --text-h5--line-height: 30px;
+  --text-h5--font-weight: 500;
+
+  --text-h6: 18px;
+  --text-h6--line-height: 27px;
+  --text-h6--font-weight: 500;
+
+  /* ================================
+     Body / Regular
+     ================================ */
+
+  --text-body-regular-12: 12px;
+  --text-body-regular-12--line-height: 18px;
+  --text-body-regular-12--font-weight: 400;
+
+  --text-body-regular-14: 14px;
+  --text-body-regular-14--line-height: 21px;
+  --text-body-regular-14--font-weight: 400;
+
+  --text-body-regular-15: 15px;
+  --text-body-regular-15--line-height: 22px;
+  --text-body-regular-15--font-weight: 400;
+
+  /* ================================
+     Body / Medium
+     ================================ */
+
+  --text-body-medium-12: 12px;
+  --text-body-medium-12--line-height: 18px;
+  --text-body-medium-12--font-weight: 500;
+
+  --text-body-medium-14: 14px;
+  --text-body-medium-14--line-height: 21px;
+  --text-body-medium-14--font-weight: 500;
+
+  --text-body-medium-15: 15px;
+  --text-body-medium-15--line-height: 22px;
+  --text-body-medium-15--font-weight: 500;
+
+  /* ================================
+     Links
+     ================================ */
+
+  --text-link-regular-14: 14px;
+  --text-link-regular-14--line-height: 21px;
+  --text-link-regular-14--font-weight: 400;
+
+  --text-link-regular-15: 15px;
+  --text-link-regular-15--line-height: 22px;
+  --text-link-regular-15--font-weight: 400;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--heading);
+  font-family: var(--poppins);
 }
