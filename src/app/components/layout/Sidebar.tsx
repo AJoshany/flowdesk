@@ -2,7 +2,7 @@ import Link from "next/link";
 
 function Sidebar() {
   return (
-    <aside className="h-screen w-64 shrink-0 border-r border-border bg-white">
+    <>
       <div className="flex h-full flex-col">
         {/* Logo */}
         <div className="flex h-20 items-center px-6">
@@ -44,7 +44,7 @@ function Sidebar() {
           </div>
         </div>
       </div>
-    </aside>
+    </>
   );
 }
 
