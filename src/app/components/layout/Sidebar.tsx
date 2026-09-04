@@ -1,6 +1,12 @@
 import Link from "next/link";
+import { logoutAction } from "@/features/auth/actions";
 
-function Sidebar() {
+type SidebarProps = {
+  userEmail: string;
+  workspaceName?: string;
+};
+
+function Sidebar({ userEmail, workspaceName }: SidebarProps) {
   return (
     <aside className="h-screen w-64 shrink-0 border-r border-border bg-white">
       <div className="flex h-full flex-col">
@@ -35,13 +41,24 @@ function Sidebar() {
           </div>
         </nav>
 
-        {/* User */}
+        {/* User (session data resolved server-side by the dashboard layout) */}
         <div className="border-t border-border p-4">
-          <div className="text-body-medium-14 text-heading">John Doe</div>
-
-          <div className="text-body-regular-12 text-body-light">
-            Administrator
+          <div className="truncate text-body-medium-14 text-heading">
+            {userEmail}
           </div>
+
+          <div className="truncate text-body-regular-12 text-body-light">
+            {workspaceName ?? "Workspace"}
+          </div>
+
+          <form action={logoutAction} className="mt-3">
+            <button
+              type="submit"
+              className="text-body-medium-12 text-body-light transition-colors hover:text-red"
+            >
+              Log out
+            </button>
+          </form>
         </div>
       </div>
     </aside>
