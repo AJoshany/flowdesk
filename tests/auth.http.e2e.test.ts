@@ -1,4 +1,5 @@
-import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
+import { spawn } from "node:child_process";
+import type { ChildProcess } from "node:child_process";
 import { createRequire } from "node:module";
 import net from "node:net";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -17,7 +18,7 @@ import { uniqueEmail } from "./helpers/env";
 
 const BASE = "http://127.0.0.1";
 let port = 0;
-let server: ChildProcessWithoutNullStreams | null = null;
+let server: ChildProcess | null = null;
 let baseUrl = "";
 let serverOutput = "";
 
@@ -103,6 +104,18 @@ function locationOf(res: Response): string {
   return res.headers.get("location") ?? "";
 }
 
+/** Auth.js returns either `{}` or JSON `null` when there is no session. */
+async function expectNoSession(cookieHeader: string): Promise<void> {
+  const res = await fetch(`${baseUrl}/api/auth/session`, {
+    headers: { cookie: cookieHeader },
+  });
+  const body = (await res.json()) as unknown;
+  const isEmpty =
+    body === null ||
+    (typeof body === "object" && body !== null && Object.keys(body).length === 0);
+  expect(isEmpty).toBe(true);
+}
+
 // -- suite ---------------------------------------------------------------
 
 describe("authentication HTTP end-to-end", () => {
@@ -125,8 +138,8 @@ describe("authentication HTTP end-to-end", () => {
         stdio: ["ignore", "pipe", "pipe"],
       }
     );
-    server.stdout.on("data", (d) => (serverOutput += String(d)));
-    server.stderr.on("data", (d) => (serverOutput += String(d)));
+    server.stdout?.on("data", (d) => (serverOutput += String(d)));
+    server.stderr?.on("data", (d) => (serverOutput += String(d)));
 
     await waitForServer(baseUrl, 180_000);
   }, 200_000);
@@ -225,10 +238,7 @@ describe("authentication HTTP end-to-end", () => {
     expect(locationOf(res)).toContain("error=");
 
     // No session cookie was issued.
-    const session = await fetch(`${baseUrl}/api/auth/session`, {
-      headers: { cookie: jar.header },
-    });
-    expect(await session.json()).toEqual({});
+    await expectNoSession(jar.header);
 
     // Protected routes still require authentication.
     const dashboard = await fetch(`${baseUrl}/dashboard`, {
@@ -291,10 +301,7 @@ describe("authentication HTTP end-to-end", () => {
     updateJar(jar, signOutRes.headers.getSetCookie());
 
     // No active session remains.
-    const session = await fetch(`${baseUrl}/api/auth/session`, {
-      headers: { cookie: jar.header },
-    });
-    expect(await session.json()).toEqual({});
+    await expectNoSession(jar.header);
 
     // Protected resources require authentication again.
     const dashboard = await fetch(`${baseUrl}/dashboard`, {

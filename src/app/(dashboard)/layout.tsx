@@ -1,22 +1,24 @@
 import Sidebar from "@/app/components/layout/Sidebar";
-import { getWorkspaceContext, requireUser } from "@/features/auth/session";
+import { requireSessionWorkspace } from "@/features/workspace/session-workspace";
 
 // Defense-in-depth on top of the middleware: the layout-level check is the
-// authoritative server-side guard for everything under the dashboard group
-// (REQ-AUTH-004 / AC-AUTH-005), regardless of middleware behavior.
+// authoritative server-side guard for everything under the dashboard group.
+// It resolves the authenticated user AND their workspace membership
+// server-side (REQ-AUTH-004 / AC-AUTH-005, BR-WS-004, AC-WS-001/002):
+// - unauthenticated users are redirected to /login;
+// - authenticated users without a workspace membership are denied.
 export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await requireUser();
-  const workspace = await getWorkspaceContext(user.id);
+  const { user, workspace } = await requireSessionWorkspace();
 
   return (
     <>
       <Sidebar
         userEmail={user.email}
-        workspaceName={workspace?.workspaceName}
+        workspaceName={workspace.workspaceName}
       />
       {children}
     </>
