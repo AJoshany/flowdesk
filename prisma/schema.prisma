@@ -35,21 +35,40 @@ model Workspace {
   memberships Membership[]
   customers   Customer[]
   deals       Deal[]
+  activities  Activity[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
 
-model Customer {
+model Activity {
   id          String    @id @default(cuid())
+  note        String
+  customerId  String?
+  customer    Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  dealId      String?
+  deal        Deal?     @relation(fields: [dealId], references: [id], onDelete: SetNull)
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([workspaceId])
+  @@index([customerId])
+  @@index([dealId])
+}
+
+model Customer {
+  id          String     @id @default(cuid())
   name        String
   email       String
   phone       String?
   company     String?
   workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   deals       Deal[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  activities  Activity[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   @@unique([workspaceId, email])
   @@index([workspaceId])
@@ -63,6 +82,7 @@ model Deal {
   customer    Customer?  @relation(fields: [customerId], references: [id], onDelete: SetNull)
   workspaceId String
   workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  activities  Activity[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 

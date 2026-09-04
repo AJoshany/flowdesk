@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ActivityList } from "@/features/activities/components/ActivityList";
+import { listActivitiesForDeal } from "@/features/activities/service";
 import { listCustomers } from "@/features/customers/service";
 import { DealForm } from "@/features/deals/components/DealForm";
 import { DealStageBadge } from "@/features/deals/components/DealStageBadge";
@@ -25,6 +27,9 @@ export default async function DealDetailPage({ params }: DealDetailPageProps) {
 
   // UI reflects the role; the server action enforces it independently.
   const canDelete = workspace.role !== "MEMBER";
+
+  // Scoped activity history for this deal (AC-ACT-003).
+  const activities = await listActivitiesForDeal(workspace.workspaceId, id);
 
   return (
     <main className="p-8">
@@ -75,6 +80,27 @@ export default async function DealDetailPage({ params }: DealDetailPageProps) {
       </div>
 
       {canDelete ? <DeleteDealForm dealId={deal.id} /> : null}
+
+      <section className="mt-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-h6 text-heading">Recent activity</h2>
+          <Link
+            href="/activities/new"
+            className="text-link-regular-14 text-primary-accent"
+          >
+            Record activity
+          </Link>
+        </div>
+        {activities.length === 0 ? (
+          <p className="mt-2 rounded-lg border border-border bg-white p-4 text-body-regular-14 text-body-light">
+            No activities recorded for this deal yet.
+          </p>
+        ) : (
+          <div className="mt-2">
+            <ActivityList activities={activities} />
+          </div>
+        )}
+      </section>
     </main>
   );
 }

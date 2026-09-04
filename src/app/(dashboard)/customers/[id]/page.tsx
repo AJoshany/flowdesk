@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ActivityList } from "@/features/activities/components/ActivityList";
+import { listActivitiesForCustomer } from "@/features/activities/service";
 import { CustomerForm } from "@/features/customers/components/CustomerForm";
 import { DeleteCustomerForm } from "@/features/customers/components/DeleteCustomerForm";
 import { getCustomerById } from "@/features/customers/service";
@@ -24,6 +26,9 @@ export default async function CustomerDetailPage({
 
   // UI reflects the role; the server action enforces it independently.
   const canDelete = workspace.role !== "MEMBER";
+
+  // Scoped activity history for this customer (AC-ACT-002).
+  const activities = await listActivitiesForCustomer(workspace.workspaceId, id);
 
   return (
     <main className="p-8">
@@ -74,6 +79,27 @@ export default async function CustomerDetailPage({
       </div>
 
       {canDelete ? <DeleteCustomerForm customerId={customer.id} /> : null}
+
+      <section className="mt-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-h6 text-heading">Recent activity</h2>
+          <Link
+            href="/activities/new"
+            className="text-link-regular-14 text-primary-accent"
+          >
+            Record activity
+          </Link>
+        </div>
+        {activities.length === 0 ? (
+          <p className="mt-2 rounded-lg border border-border bg-white p-4 text-body-regular-14 text-body-light">
+            No activities recorded for this customer yet.
+          </p>
+        ) : (
+          <div className="mt-2">
+            <ActivityList activities={activities} />
+          </div>
+        )}
+      </section>
     </main>
   );
 }
