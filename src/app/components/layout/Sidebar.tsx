@@ -33,6 +33,13 @@ function Sidebar({ userEmail, workspaceName }: SidebarProps) {
             </Link>
 
             <Link
+              href="/deals"
+              className="block rounded-lg px-4 py-3 text-body-medium-14 text-heading hover:bg-bg"
+            >
+              Deals
+            </Link>
+
+            <Link
               href="/settings"
               className="block rounded-lg px-4 py-3 text-body-medium-14 text-heading hover:bg-bg"
             >
