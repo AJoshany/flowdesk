@@ -1,16 +1,24 @@
-import { existsSync } from "node:fs";
 import type { NextConfig } from "next";
 
-// The project keeps its environment in `.env/.env.dev`, which is not one of
-// the env files Next.js auto-loads. Load it before the config is evaluated so
-// DATABASE_URL and AUTH_SECRET are available to the server runtime.
-const envFile = ".env/.env.dev";
-if (existsSync(envFile)) {
-  process.loadEnvFile(envFile);
-}
-
 const nextConfig: NextConfig = {
-  /* config options here */
+  // WASM-heavy server packages must load natively instead of being bundled by
+  // Turbopack: PGlite resolves its .wasm/.data artifacts relative to its real
+  // module location, and @prisma/client does the same for its query
+  // compiler. When inlined into an SSR chunk, that resolution produces a URL
+  // that Node's path helpers reject ("The path argument must be of type
+  // string or an instance of Buffer or URL. Received an instance of URL").
+  // pglite-prisma-adapter is externalized alongside PGlite so both share the
+  // same class identity.
+  serverExternalPackages: [
+    "@electric-sql/pglite",
+    "pglite-prisma-adapter",
+    "@prisma/client",
+  ],
+  // The managed preview serves the dev server through a proxy host (e.g.
+  // *.daytonaproxy01.net). Next.js 16 blocks cross-origin dev resources by
+  // default; allow that domain so HMR/static chunks load in the preview.
+  // Dev-only setting — ignored in production builds.
+  allowedDevOrigins: ["*.daytonaproxy01.net"],
 };
 
 export default nextConfig;

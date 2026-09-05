@@ -14,10 +14,10 @@ export function StatCard({ label, value, href }: StatCardProps) {
   return (
     <Link
       href={href}
-      className="rounded-lg border border-border bg-white p-4 transition-colors hover:bg-bg"
+      className="block rounded-lg border border-border bg-white p-4 transition-all hover:-translate-y-0.5 hover:bg-bg hover:shadow-sm"
     >
       <div className="text-body-regular-12 text-body-light">{label}</div>
-      <div className="mt-1 text-h5 text-heading">{value}</div>
+      <div className="mt-1 text-h5 text-primary-accent">{value}</div>
     </Link>
   );
 }

@@ -21,6 +21,19 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   if (!user?.id) {
     return null;
   }
+  // A decodable JWT is not proof the account still exists: the virtual dev DB
+  // can be re-provisioned or a user removed server-side while their session
+  // cookie remains valid. Verify the id still resolves so a stale session
+  // behaves like a signed-out visitor (redirect to /login) instead of 404ing
+  // protected pages. The page-level 404 remains reserved for users that exist
+  // but hold no workspace membership (AC-WS-002).
+  const existing = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { id: true },
+  });
+  if (!existing) {
+    return null;
+  }
   return { id: user.id, email: user.email ?? "" };
 }
 
