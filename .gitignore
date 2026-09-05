@@ -36,6 +36,9 @@ yarn-error.log*
 # local virtual database (PGlite) data
 .pglite/
 
+# platform deploy staging copy
+isolate/
+
 # vercel
 .vercel
 

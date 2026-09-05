@@ -19,11 +19,16 @@
  * Run manually: `node scripts/prepare-dev-db.mjs`
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import bcrypt from "bcryptjs";
 import { PGlite } from "@electric-sql/pglite";
 
-const PGLITE_DIR = join(process.cwd(), ".pglite", "dev");
+// The virtual DB lives OUTSIDE the project root on purpose: the deploy
+// uploader stages the raw working directory (ignoring .gitignore), and a
+// live, locked database inside the project broke deploys with file-read
+// errors. Must match src/lib/prisma.ts.
+const PGLITE_DIR = join(homedir(), ".flowdesk", "pglite", "dev");
 const MIGRATIONS_DIR = join(process.cwd(), "prisma", "migrations");
 const MIGRATION_TABLE = "_flowdesk_migrations";
 

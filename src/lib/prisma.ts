@@ -1,4 +1,5 @@
 import { mkdirSync } from "node:fs";
+import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { PGlite } from "@electric-sql/pglite";
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -18,7 +19,11 @@ import { PrismaClient } from "@prisma/client";
 
 export type { PrismaClient } from "@prisma/client";
 
-const PGLITE_DIR = join(process.cwd(), ".pglite", "dev");
+// The virtual DB lives OUTSIDE the project root on purpose: the deploy
+// uploader stages the raw working directory (ignoring .gitignore), and a
+// live, locked database inside the project broke deploys with file-read
+// errors. It is a disposable dev artifact, so a home-dir location is fine.
+const PGLITE_DIR = join(homedir(), ".flowdesk", "pglite", "dev");
 
 let prismaPromise: Promise<PrismaClient> | null = null;
 
