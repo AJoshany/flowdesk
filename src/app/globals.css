@@ -40,6 +40,32 @@
   --poppins: "Poppins", sans-serif;
 }
 
+/* Dark theme tokens — only active when <html data-theme="dark">. */
+:root[data-theme="dark"] {
+  --heading: #e6e8ec;
+  --body-light: #9aa0ac;
+  --body-dark: #3a3c4a;
+  --grey: #6b7080;
+  --border: #2c2e3a;
+  --bg: #0f1119;
+  --white: #1b1d27;
+
+  --primary-accent: #32d3b0;
+  --primary-light: #1a8a77;
+
+  --red: #ff7a6b;
+  --yellow: #ffc857;
+  --blue: #5be0f5;
+  --green: #bbf280;
+  --dark-green: #8ad875;
+  --dark-orange: #ff8a6b;
+  --dark-yellow: #ffc857;
+  --dark-red: #ff7a6b;
+  --dark-blue: #5be0f5;
+  --purple: #cf9cf2;
+  --pink: #ff9cc6;
+}
+
 @theme inline {
   /* Colors */
 

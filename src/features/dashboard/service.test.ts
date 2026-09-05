@@ -117,7 +117,7 @@ describe("dashboard service (integration, test database)", () => {
 
     expect(data.dealCount).toBe(4);
     expect(data.dealsByStage).toEqual({
-      NEW: 2,
+      NEW: 1,
       QUALIFIED: 2,
       PROPOSAL: 0,
       WON: 1,

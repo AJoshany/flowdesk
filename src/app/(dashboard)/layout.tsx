@@ -15,12 +15,13 @@ export default async function DashboardLayout({
   const { user, workspace } = await requireSessionWorkspace();
 
   return (
-    <>
+    <div className="flex h-screen bg-bg">
       <Sidebar
         userEmail={user.email}
         workspaceName={workspace.workspaceName}
       />
-      {children}
-    </>
+      {/* Scrollable content column beside the fixed sidebar */}
+      <div className="min-w-0 flex-1 overflow-y-auto">{children}</div>
+    </div>
   );
 }
