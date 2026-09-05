@@ -72,7 +72,7 @@ describe("association validation (BR-ACT-002/003/004)", () => {
   });
 
   it("treats missing/empty association ids as no association", () => {
-    for (const field of ["customerId", "dealId"]) {
+    for (const field of ["customerId", "dealId"] as const) {
       for (const value of [undefined, "", "   ", null]) {
         const result = activityFieldsSchema.safeParse({
           note: "Note",
@@ -89,7 +89,7 @@ describe("association validation (BR-ACT-002/003/004)", () => {
   });
 
   it("rejects malformed association ids", () => {
-    for (const field of ["customerId", "dealId"]) {
+    for (const field of ["customerId", "dealId"] as const) {
       for (const value of ["bad id !!", "has space", "x".repeat(65)]) {
         const result = activityFieldsSchema.safeParse({
           note: "Note",

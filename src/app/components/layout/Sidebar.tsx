@@ -47,6 +47,13 @@ function Sidebar({ userEmail, workspaceName }: SidebarProps) {
             </Link>
 
             <Link
+              href="/team"
+              className="block rounded-lg px-4 py-3 text-body-medium-14 text-heading hover:bg-bg"
+            >
+              Team
+            </Link>
+
+            <Link
               href="/settings"
               className="block rounded-lg px-4 py-3 text-body-medium-14 text-heading hover:bg-bg"
             >
