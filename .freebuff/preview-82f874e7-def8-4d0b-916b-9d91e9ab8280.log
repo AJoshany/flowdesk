@@ -1,0 +1,36 @@
+▲ Next.js 16.3.3 (Turbopack)
+- Local:         http://127.0.0.1:3000
+- Network:       http://127.0.0.1:3000
+✓ Ready in 5.2s
+✓ Running next.config.ts took 317ms
+
+ GET /login 404 in 2.9s (next.js: -218.8ms, proxy.ts: 2.9s, application-code: 233ms)
+ GET / 307 in 1535ms (next.js: 1241ms, application-code: 294ms)
+ GET /login 404 in 111ms (next.js: -17.2ms, proxy.ts: 107ms, application-code: 21ms)
+✓ Compiled in 243ms
+✓ Compiled in 16ms
+ GET /login 404 in 154ms (next.js: -24.7ms, proxy.ts: 147ms, application-code: 31ms)
+ GET /register 404 in 164ms (next.js: -13.2ms, proxy.ts: 157ms, application-code: 20ms)
+ GET /customers 404 in 102ms (next.js: -12.3ms, proxy.ts: 97ms, application-code: 18ms)
+ GET /settings 404 in 85ms (next.js: -12.8ms, proxy.ts: 79ms, application-code: 18ms)
+ GET /dashboard 404 in 79ms (next.js: -13.3ms, proxy.ts: 73ms, application-code: 19ms)
+ GET / 307 in 177ms (next.js: 66ms, application-code: 111ms)
+✓ Compiled in 55ms
+ GET /login 200 in 875ms (next.js: 672ms, proxy.ts: 50ms, application-code: 152ms)
+ GET /register 200 in 1154ms (next.js: 908ms, proxy.ts: 10ms, application-code: 236ms)
+ GET / 307 in 84ms (next.js: 16ms, application-code: 68ms)
+ GET /login 200 in 86ms (next.js: 21ms, proxy.ts: 4ms, application-code: 61ms)
+ GET /login 200 in 121ms (next.js: 13ms, proxy.ts: 23ms, application-code: 84ms)
+ GET /register 200 in 63ms (next.js: 14ms, proxy.ts: 8ms, application-code: 42ms)
+ GET /dashboard 200 in 319ms (next.js: 110ms, proxy.ts: 19ms, application-code: 191ms)
+ POST /register 200 in 941ms (next.js: 11ms, proxy.ts: 8ms, application-code: 922ms)
+  └─ ƒ registerAction(null, {}) in 556ms src/features/auth/actions.ts
+ GET /login 200 in 63ms (next.js: 8ms, proxy.ts: 4ms, application-code: 51ms)
+ POST /dashboard 200 in 122ms (next.js: 11ms, proxy.ts: 10ms, application-code: 101ms)
+  └─ ƒ logoutAction() in 20ms src/features/auth/actions.ts
+ GET /dashboard 200 in 102ms (next.js: 10ms, proxy.ts: 10ms, application-code: 82ms)
+ POST /login 200 in 286ms (next.js: 10ms, proxy.ts: 7ms, application-code: 269ms)
+  └─ ƒ loginAction(null, {}) in 146ms src/features/auth/actions.ts
+ GET /login 200 in 61ms (next.js: 8ms, proxy.ts: 4ms, application-code: 49ms)
+ POST /dashboard 200 in 122ms (next.js: 11ms, proxy.ts: 9ms, application-code: 102ms)
+  └─ ƒ logoutAction() in 21ms src/features/auth/actions.ts
