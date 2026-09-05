@@ -67,6 +67,24 @@ export async function listActivities(workspaceId: string): Promise<Activity[]> {
   });
 }
 
+/**
+ * The `take` most recent workspace activities, newest first (REQ-DASH-004).
+ *
+ * Used by the Dashboard for the activity overview without loading the full
+ * feed. Scoped to `workspaceId` like every other activity read (BR-ACT-005).
+ */
+export async function listRecentActivities(
+  workspaceId: string,
+  take: number
+): Promise<Activity[]> {
+  return prisma.activity.findMany({
+    where: { workspaceId },
+    orderBy: { createdAt: "desc" },
+    take,
+    select: activitySelect,
+  });
+}
+
 /** Activities associated with a customer (AC-ACT-002), newest first. */
 export async function listActivitiesForCustomer(
   workspaceId: string,

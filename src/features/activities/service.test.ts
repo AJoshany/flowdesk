@@ -9,6 +9,7 @@ import {
   listActivities,
   listActivitiesForCustomer,
   listActivitiesForDeal,
+  listRecentActivities,
 } from "./service";
 
 const PASSWORD = "password-123";
@@ -175,6 +176,33 @@ describe("activity service (integration, test database)", () => {
   it("returns an empty feed for a workspace with no activities", async () => {
     const { workspaceId } = await registerOwner("act-empty");
     await expect(listActivities(workspaceId)).resolves.toEqual([]);
+  });
+
+  it("limits recent activities and returns the newest first (REQ-DASH-004)", async () => {
+    const { workspaceId } = await registerOwner("act-recent");
+
+    for (let i = 0; i < 6; i++) {
+      await seedActivity(workspaceId, { note: `Activity ${i}` });
+    }
+    const newest = await seedActivity(workspaceId, { note: "Newest activity" });
+
+    const recent = await listRecentActivities(workspaceId, 3);
+    expect(recent).toHaveLength(3);
+    expect(recent[0].id).toBe(newest.id);
+    expect(recent.map((x) => x.workspaceId).every((id) => id === workspaceId)).toBe(true);
+    const timestamps = recent.map((x) => x.createdAt.getTime());
+    expect([...timestamps].sort((a, b) => b - a)).toEqual(timestamps);
+  });
+
+  it("scopes recent activities to the workspace (BR-ACT-005)", async () => {
+    const a = await registerOwner("act-recent-a");
+    const b = await registerOwner("act-recent-b");
+
+    await seedActivity(a.workspaceId, { note: "A's activity" });
+    await seedActivity(b.workspaceId, { note: "B's activity" });
+
+    const recentA = await listRecentActivities(a.workspaceId, 5);
+    expect(recentA.map((x) => x.note)).toEqual(["A's activity"]);
   });
 
   it("scopes customer activity history to that customer (AC-ACT-002)", async () => {
