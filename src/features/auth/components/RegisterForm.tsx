@@ -31,6 +31,7 @@ export function RegisterForm() {
       </p>
 
       <form action={formAction} className="mt-6 space-y-4">
+        <input type="hidden" name="callbackUrl" value="/dashboard" />
         <div>
           <label
             htmlFor="email"

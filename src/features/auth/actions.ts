@@ -68,7 +68,10 @@ export async function loginAction(
     if (error instanceof AuthError) {
       return { error: INVALID_CREDENTIALS_MESSAGE };
     }
-    throw error;
+    // Non-AuthError failures (e.g. a missing/invalid server configuration such
+    // as a missing AUTH_SECRET) are surfaced in the form rather than a raw 500
+    // + React error #441, without leaking any configuration detail.
+    return { error: INVALID_CREDENTIALS_MESSAGE };
   }
 
   redirect(resolveRedirectTarget(callbackUrl));
@@ -107,11 +110,15 @@ export async function registerAction(
   try {
     await signIn("credentials", { email, password, redirect: false });
   } catch (error) {
+    // `signIn` throws for any auth-failure path that is NOT an AuthError
+    // (e.g. a missing/invalid server configuration such as a missing AUTH_SECRET).
+    // AuthError is already mapped above for the login action.
     if (error instanceof AuthError) {
-      // The account was created; authentication failing here is unexpected.
       return { error: GENERIC_ERROR_MESSAGE };
     }
-    throw error;
+    // Non-AuthError config/runtime failures: surface a single, non-leaking
+    // message in the form rather than a raw 500 + React error #441.
+    return { error: REGISTRATION_ERROR_MESSAGE };
   }
 
   // Approved MVP decision: registration always lands on /dashboard.
