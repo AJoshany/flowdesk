@@ -1,5 +1,4 @@
 import { spawnSync } from "node:child_process";
-import { Client } from "pg";
 import { loadProjectEnv, requireEnv } from "./helpers/env";
 
 /**
@@ -26,6 +25,7 @@ export default async function globalSetup(): Promise<void> {
   }
 
   // Start from a clean slate (truncate all tables).
+  const { Client } = await import("pg");
   const client = new Client({ connectionString: testUrl });
   await client.connect();
   try {
@@ -38,6 +38,7 @@ export default async function globalSetup(): Promise<void> {
 }
 
 async function ensureDatabaseExists(url: string): Promise<void> {
+  const { Client } = await import("pg");
   const probe = new Client({ connectionString: url });
   try {
     await probe.connect();
