@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 /**
  * Client-side color-scheme wiring.
@@ -64,16 +64,66 @@ function syncThemeFromStorage() {
   applyThemeTag(eff);
 }
 
-/** Pure hook that returns the stored color-scheme value. Exposed for UI toggles. */
-export function useColorScheme(): ColorScheme {
-  const [scheme] = useState(readStoredScheme);
-  return scheme;
+/**
+ * Subscribes to every source that can change the color scheme: the in-app
+ * toggle (custom event), other tabs (storage event) and, for the effective
+ * scheme, the OS preference (matchMedia).
+ */
+function subscribeScheme(callback: () => void): () => void {
+  window.addEventListener("flowdesk-theme-change", callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener("flowdesk-theme-change", callback);
+    window.removeEventListener("storage", callback);
+  };
 }
 
-/** Effective (actual rendered) scheme, derived from stored + system preference. */
+function subscribeEffective(callback: () => void): () => void {
+  const unsubscribe = subscribeScheme(callback);
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  if (mq.addEventListener) {
+    mq.addEventListener("change", callback);
+  } else {
+    mq.addListener(callback);
+  }
+  return () => {
+    unsubscribe();
+    if (mq.removeEventListener) {
+      mq.removeEventListener("change", callback);
+    } else {
+      mq.removeListener(callback);
+    }
+  };
+}
+
+/**
+ * Pure hook that returns the stored color-scheme value. Exposed for UI toggles.
+ *
+ * HYDRATION SAFETY: `useSyncExternalStore` renders the server snapshot
+ * ("system") during SSR and hydration, so the first client render always
+ * matches the server HTML. The real stored value is picked up on the first
+ * client snapshot after hydration, and updates when the toggle fires, when
+ * another tab changes the preference, or when a navigation happens.
+ */
+export function useColorScheme(): ColorScheme {
+  return useSyncExternalStore(subscribeScheme, readStoredScheme, () => "system");
+}
+
+/**
+ * Effective (actual rendered) scheme, derived from stored + system preference.
+ *
+ * HYDRATION SAFETY: renders the server snapshot ("light") during SSR and
+ * hydration so the first client render matches the server HTML exactly. The
+ * real value (stored preference + OS preference) is computed on the first
+ * client snapshot after hydration, and re-computed whenever the toggle, another
+ * tab, or the OS preference changes.
+ */
 export function useEffectiveScheme(): "light" | "dark" {
-  const [stored] = useState(readStoredScheme);
-  return effectiveScheme(stored);
+  return useSyncExternalStore(
+    subscribeEffective,
+    () => effectiveScheme(readStoredScheme()),
+    () => "light",
+  );
 }
 
 /** Server-safe effective-scheme getter for the root layout (SSR-safe). */
