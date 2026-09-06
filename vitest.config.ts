@@ -27,5 +27,10 @@ export default defineConfig({
         external: ["next-auth", "@auth/core"],
       },
     },
+    alias: {
+      // HACK(vitest): keep the global setup import out of the app's TS
+      // baseline because the pg types aren't installed in this workspace.
+      "@tests/global-setup": fileURLToPath(new URL("./tests/global-setup.ts", import.meta.url)),
+    },
   },
 });
