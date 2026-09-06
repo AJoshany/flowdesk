@@ -1,6 +1,6 @@
 export default function DashboardLoading() {
   return (
-    <main className="p-8">
+    <main className="p-4 sm:p-6 lg:p-8">
       <div className="h-9 w-40 animate-pulse rounded-lg bg-grey/40" />
       <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="h-24 animate-pulse rounded-lg bg-grey/40" />

@@ -21,7 +21,7 @@ export default async function SettingsPage() {
   const isOwner = workspace.role === "OWNER";
 
   return (
-    <main className="p-8">
+    <main className="p-4 sm:p-6 lg:p-8">
       <div>
         <h1 className="text-h4 text-heading">Settings</h1>
         <p className="mt-1 text-body-regular-14 text-body-light">

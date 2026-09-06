@@ -1,4 +1,4 @@
-import Sidebar from "@/app/components/layout/Sidebar";
+import DashboardShell from "@/app/components/layout/DashboardShell";
 import { requireSessionWorkspace } from "@/features/workspace/session-workspace";
 
 // Defense-in-depth on top of the middleware: the layout-level check is the
@@ -15,13 +15,11 @@ export default async function DashboardLayout({
   const { user, workspace } = await requireSessionWorkspace();
 
   return (
-    <div className="flex h-screen bg-bg">
-      <Sidebar
-        userEmail={user.email}
-        workspaceName={workspace.workspaceName}
-      />
-      {/* Scrollable content column beside the fixed sidebar */}
-      <div className="min-w-0 flex-1 overflow-y-auto">{children}</div>
-    </div>
+    <DashboardShell
+      userEmail={user.email}
+      workspaceName={workspace.workspaceName}
+    >
+      {children}
+    </DashboardShell>
   );
 }

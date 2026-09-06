@@ -8,7 +8,7 @@ export default async function DealsPage() {
   const deals = await listDeals(workspace.workspaceId);
 
   return (
-    <main className="p-8">
+    <main className="p-4 sm:p-6 lg:p-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-h4 text-heading">Deals</h1>

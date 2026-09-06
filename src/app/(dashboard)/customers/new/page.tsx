@@ -7,7 +7,7 @@ export default async function NewCustomerPage() {
   await requireSessionWorkspace();
 
   return (
-    <main className="p-8">
+    <main className="p-4 sm:p-6 lg:p-8">
       <Link
         href="/customers"
         className="text-link-regular-14 text-primary-accent"
