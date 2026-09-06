@@ -43,27 +43,27 @@ export async function registerUser(input: {
   const passwordHash = await hashPassword(password);
 
   try {
-    const user = await prisma.$transaction(async (tx) => {
-      const createdUser = await tx.user.create({
-        data: { email, passwordHash },
-        select: { id: true, email: true },
-      });
-      const workspace = await tx.workspace.create({
-        data: { name: DEFAULT_WORKSPACE_NAME },
-        select: { id: true },
-      });
-      // First membership of the new workspace is OWNER (BR-AUTH-002).
-      await tx.membership.create({
-        data: {
-          userId: createdUser.id,
-          workspaceId: workspace.id,
-          role: "OWNER",
-        },
-        select: { id: true },
-      });
-      return createdUser;
+    // Sequential writes instead of an interactive transaction: Neon's
+    // transaction-mode pooler (PgBouncer) does not support interactive
+    // transactions, so $transaction fails on writes while reads succeed.
+    const createdUser = await prisma.user.create({
+      data: { email, passwordHash },
+      select: { id: true, email: true },
     });
-    return { ok: true, user };
+    const workspace = await prisma.workspace.create({
+      data: { name: DEFAULT_WORKSPACE_NAME },
+      select: { id: true },
+    });
+    // First membership of the new workspace is OWNER (BR-AUTH-002).
+    await prisma.membership.create({
+      data: {
+        userId: createdUser.id,
+        workspaceId: workspace.id,
+        role: "OWNER",
+      },
+      select: { id: true },
+    });
+    return { ok: true, user: createdUser };
   } catch (error) {
     // Concurrent duplicate registration: the unique email constraint rejects
     // the second insert (P2002). Map it to the same safe duplicate error.
