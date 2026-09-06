@@ -11,6 +11,7 @@ import {
   DUPLICATE_ACCOUNT_MESSAGE,
 } from "./messages";
 import { resolveRedirectTarget } from "./redirects";
+import { setupAuthErrorLink } from "@/features/auth/links";
 import { loginSchema, registerSchema } from "./schemas";
 import { registerUser } from "./services";
 
@@ -71,6 +72,13 @@ export async function loginAction(
     // Non-AuthError failures (e.g. a missing/invalid server configuration such
     // as a missing AUTH_SECRET) are surfaced in the form rather than a raw 500
     // + React error #441, without leaking any configuration detail.
+    const nonAuthError = setupAuthErrorLink({
+      actionName: "login",
+      destination: resolveRedirectTarget(callbackUrl),
+    });
+    if (nonAuthError) {
+      return { error: nonAuthError };
+    }
     return { error: INVALID_CREDENTIALS_MESSAGE };
   }
 
@@ -118,6 +126,13 @@ export async function registerAction(
     }
     // Non-AuthError config/runtime failures: surface a single, non-leaking
     // message in the form rather than a raw 500 + React error #441.
+    const nonAuthError = setupAuthErrorLink({
+      actionName: "register",
+      destination: "/dashboard",
+    });
+    if (nonAuthError) {
+      return { error: nonAuthError };
+    }
     return { error: REGISTRATION_ERROR_MESSAGE };
   }
 

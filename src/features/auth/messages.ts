@@ -16,3 +16,7 @@ export const DUPLICATE_ACCOUNT_MESSAGE =
 export const GENERIC_ERROR_MESSAGE = "Something went wrong. Please try again.";
 
 export const REGISTRATION_ERROR_MESSAGE = "We could not create your account. Please try again.";
+
+/** Link shown next to auth configuration failure messages. */
+export const AUTH_SETTINGS_LINK = "/settings";
+
