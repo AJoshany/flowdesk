@@ -7,18 +7,36 @@ export const metadata: Metadata = {
   description: "FlowDesk",
 };
 
+/**
+ * Inline script that runs before React hydration to set <html data-theme>
+ * from localStorage, preventing a flash of the wrong color scheme (FOUC).
+ */
+const themeInitScript = `
+(function(){
+  try {
+    var raw = localStorage.getItem('flowdesk.colorScheme');
+    var scheme = (raw === 'light' || raw === 'dark') ? raw : 'system';
+    var effective = scheme === 'system'
+      ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : scheme;
+    if (effective === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  } catch (e) {}
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // The active theme is resolved client-side by ColorSchemeScript, which reads
-  // localStorage "flowdesk.colorScheme" and sets <html data-theme="dark"> on mount.
-  // During SSR we render without a data-theme attribute (light tokens); the client
-  // script patches it immediately so the first client paint matches the stored choice.
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <ColorSchemeScript />
       </head>
       <body>{children}</body>

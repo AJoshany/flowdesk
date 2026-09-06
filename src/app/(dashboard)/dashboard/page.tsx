@@ -19,7 +19,7 @@ export default async function DashboardPage() {
     data.customerCount === 0 && data.dealCount === 0 && data.activityCount === 0;
 
   return (
-    <main className="p-8">
+    <main className="p-4 sm:p-6 lg:p-8">
       <div>
         <h1 className="text-h4 text-heading">Dashboard</h1>
         <p className="mt-1 text-body-regular-14 text-body-light">

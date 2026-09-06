@@ -19,7 +19,7 @@ export default async function InviteMemberPage() {
     : [...TEAM_ROLES];
 
   return (
-    <main className="p-8">
+    <main className="p-4 sm:p-6 lg:p-8">
       <Link href="/team" className="text-link-regular-14 text-primary-accent">
         ← Back to team
       </Link>

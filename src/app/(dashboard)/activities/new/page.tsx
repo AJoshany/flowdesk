@@ -11,7 +11,7 @@ export default async function NewActivityPage() {
   const deals = await listDeals(workspace.workspaceId);
 
   return (
-    <main className="p-8">
+    <main className="p-4 sm:p-6 lg:p-8">
       <Link
         href="/activities"
         className="text-link-regular-14 text-primary-accent"

@@ -22,7 +22,7 @@ export default async function TeamPage() {
     : ([...TEAM_ROLES].filter((role) => role !== "OWNER") as TeamRole[]);
 
   return (
-    <main className="p-8">
+    <main className="p-4 sm:p-6 lg:p-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-h4 text-heading">Team</h1>

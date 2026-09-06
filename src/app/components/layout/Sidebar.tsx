@@ -2,17 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useCallback } from "react";
 import {
   useColorScheme,
   useEffectiveScheme,
   setColorScheme,
-  ColorScheme,
+  type ColorScheme,
 } from "@/components/theme/ColorScheme";
-import { logoutAction } from "@/features/auth/actions";
 
 type SidebarProps = {
   userEmail: string;
   workspaceName?: string;
+  open: boolean;
+  onToggle: () => void;
 };
 
 const NAV_ITEMS = [
@@ -60,7 +62,7 @@ function ThemeToggleIcon({ effective }: { effective: "light" | "dark" }) {
   );
 }
 
-function Sidebar({ userEmail, workspaceName }: SidebarProps) {
+function Sidebar({ userEmail, workspaceName, open, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const storedScheme = useColorScheme();
   const effective = useEffectiveScheme();
@@ -68,86 +70,153 @@ function Sidebar({ userEmail, workspaceName }: SidebarProps) {
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
 
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    if (open) onToggle();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  // Close on Escape key
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape" && open) onToggle();
+    },
+    [open, onToggle]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
+  // Lock body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   return (
-    <aside className="h-screen w-64 shrink-0 border-r border-border bg-white dark:bg-body-dark">
-      <div className="flex h-full flex-col">
-        {/* Logo */}
-        <div className="flex h-20 items-center gap-2.5 px-6">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-accent text-h6 text-white">
-            F
-          </span>
-          <span className="text-h5 text-heading">FlowDesk</span>
-        </div>
+    <>
+      {/* Mobile backdrop overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 transition-opacity lg:hidden"
+          onClick={onToggle}
+          aria-hidden="true"
+        />
+      )}
 
-        {/* Navigation */}
-        <nav className="flex-1 px-4">
-          <div className="space-y-1">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={isActive(item.href) ? "page" : undefined}
-                className={`block rounded-lg px-4 py-2.5 text-body-medium-14 transition-colors ${
-                  isActive(item.href)
-                    ? "bg-bg text-primary-accent"
-                    : "text-heading hover:bg-bg"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </nav>
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed inset-y-0 left-0 z-50 flex w-64 flex-col
+          border-r border-border bg-white
+          transition-transform duration-200 ease-in-out
+          lg:static lg:translate-x-0
+          ${open ? "translate-x-0" : "-translate-x-full"}
+        `}
+      >
+        <div className="flex h-full flex-col">
+          {/* Logo */}
+          <div className="flex h-20 shrink-0 items-center justify-between px-6">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-accent text-h6 text-white">
+                F
+              </span>
+              <span className="text-h5 text-heading">FlowDesk</span>
+            </div>
 
-        {/* User (session data resolved server-side by the dashboard layout) */}
-        <div className="border-t border-border p-4">
-          <div className="flex items-center gap-3">
-            <span
-              aria-hidden
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-light text-body-medium-14 text-primary-accent"
+            {/* Close button (mobile only) */}
+            <button
+              type="button"
+              onClick={onToggle}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-heading transition-colors hover:bg-bg lg:hidden"
+              aria-label="Close sidebar"
             >
-              {initialsFromEmail(userEmail)}
-            </span>
-            <div className="min-w-0">
-              <div className="truncate text-body-medium-14 text-heading">
-                {userEmail}
-              </div>
-              <div className="truncate text-body-regular-12 text-body-light">
-                {workspaceName ?? "Workspace"}
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 overflow-y-auto px-4">
+            <div className="space-y-1">
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive(item.href) ? "page" : undefined}
+                  className={`block rounded-lg px-4 py-2.5 text-body-medium-14 transition-colors ${
+                    isActive(item.href)
+                      ? "bg-bg text-primary-accent dark:bg-white/5 dark:text-primary-accent"
+                      : "text-heading hover:bg-bg dark:text-heading dark:hover:bg-white/5"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </nav>
+
+          {/* User section */}
+          <div className="shrink-0 border-t border-border p-4">
+            <div className="flex items-center gap-3">
+              <span
+                aria-hidden
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-light text-body-medium-14 text-primary-accent"
+              >
+                {initialsFromEmail(userEmail)}
+              </span>
+              <div className="min-w-0">
+                <div className="truncate text-body-medium-14 text-heading">
+                  {userEmail}
+                </div>
+                <div className="truncate text-body-regular-12 text-body-light">
+                  {workspaceName ?? "Workspace"}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Theme toggle — cycles Light → Dark → System */}
-          <button
-            type="button"
-            onClick={() => {
-              const next: ColorScheme =
-                storedScheme === "light"
-                  ? "dark"
-                  : storedScheme === "dark"
-                    ? "system"
-                    : "light";
-              setColorScheme(next);
-              // no reload — ColorSchemeScript listens for the event and flips immediately
-            }}
-            className="mt-3 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-body-medium-12 text-body-light transition-colors hover:bg-bg"
-          >
-            <ThemeToggleIcon effective={effective} />
-            <span>{effectiveThemeLabel(effective)}</span>
-          </button>
-
-          <form action={logoutAction} className="mt-2">
+            {/* Theme toggle — cycles Light → Dark → System */}
             <button
-              type="submit"
-              className="w-full text-body-medium-12 text-body-light transition-colors hover:text-red"
+              type="button"
+              onClick={() => {
+                const next: ColorScheme =
+                  storedScheme === "light"
+                    ? "dark"
+                    : storedScheme === "dark"
+                      ? "system"
+                      : "light";
+                setColorScheme(next);
+              }}
+              className="mt-3 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-body-medium-12 text-body-light transition-colors hover:bg-bg dark:hover:bg-white/5"
             >
-              Log out
+              <ThemeToggleIcon effective={effective} />
+              <span>{effectiveThemeLabel(effective)}</span>
             </button>
-          </form>
+
+            <form action={async () => {
+              const { logoutAction } = await import("@/features/auth/actions");
+              logoutAction();
+            }} className="mt-2">
+              <button
+                type="submit"
+                className="w-full text-body-medium-12 text-body-light transition-colors hover:text-red"
+              >
+                Log out
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }
 

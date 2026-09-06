@@ -11,7 +11,7 @@ export default function DashboardError({
   reset: () => void;
 }) {
   return (
-    <main className="p-8">
+    <main className="p-4 sm:p-6 lg:p-8">
       <div className="rounded-lg border border-border bg-white p-8 text-center">
         <h1 className="text-h5 text-heading">Something went wrong</h1>
         <p className="mt-1 text-body-regular-14 text-body-light">
