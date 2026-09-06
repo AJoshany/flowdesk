@@ -79,7 +79,7 @@ export async function loginAction(
     if (nonAuthError) {
       return { error: nonAuthError };
     }
-    return { error: INVALID_CREDENTIALS_MESSAGE };
+    return { error: GENERIC_ERROR_MESSAGE };
   }
 
   redirect(resolveRedirectTarget(callbackUrl));
@@ -107,7 +107,16 @@ export async function registerAction(
   }
 
   const { email, password } = parsed.data;
-  const result = await registerUser({ email, password });
+
+  let result: Awaited<ReturnType<typeof registerUser>>;
+  try {
+    result = await registerUser({ email, password });
+  } catch {
+    // A database failure during registration (User + Workspace + OWNER
+    // Membership writes) must surface as an in-form error, never as a raw
+    // 500 + React error #441. No error detail is leaked to the user.
+    return { error: REGISTRATION_ERROR_MESSAGE };
+  }
   if (!result.ok) {
     if (result.code === "duplicate") {
       return { error: DUPLICATE_ACCOUNT_MESSAGE };
@@ -133,7 +142,7 @@ export async function registerAction(
     if (nonAuthError) {
       return { error: nonAuthError };
     }
-    return { error: REGISTRATION_ERROR_MESSAGE };
+    return { error: GENERIC_ERROR_MESSAGE };
   }
 
   // Approved MVP decision: registration always lands on /dashboard.
