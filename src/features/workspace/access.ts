@@ -11,6 +11,16 @@ import type { WorkspaceMembership } from "./types";
  * workspace-scoped operation must go through — never "query by client-provided
  * id only".
  *
+ * CURRENT USAGE PATTERN:
+ * The current implementation resolves workspace isolation through
+ * `requireSessionWorkspace()` (which resolves the user from the session and
+ * their primary workspace) combined with service-level workspace scoping
+ * (every service query includes `workspaceId` in the WHERE clause). This
+ * function exists as a lower-level building block for cases where a specific
+ * (userId, workspaceId) pair needs to be verified independently — for example,
+ * when a server action receives a workspaceId from form data or when
+ * cross-workspace access must be explicitly checked.
+ *
  * Denial policy:
  * - Unauthenticated users are handled upstream (middleware + auth session
  *   helpers redirect to /login).
