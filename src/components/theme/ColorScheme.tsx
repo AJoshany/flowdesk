@@ -35,7 +35,7 @@ function readStoredScheme(): ColorScheme {
   return "system";
 }
 
-function effectiveScheme(storageScheme: ColorScheme): "light" | "dark" {
+export function effectiveScheme(storageScheme: ColorScheme): "light" | "dark" {
   if (storageScheme === "system") {
     if (typeof window === "undefined" || !window.matchMedia) {
       return "light";

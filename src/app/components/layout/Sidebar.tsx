@@ -7,6 +7,7 @@ import {
   useColorScheme,
   useEffectiveScheme,
   setColorScheme,
+  effectiveScheme,
   type ColorScheme,
 } from "@/components/theme/ColorScheme";
 
@@ -188,12 +189,23 @@ function Sidebar({ userEmail, workspaceName, open, onToggle }: SidebarProps) {
             <button
               type="button"
               onClick={() => {
-                const next: ColorScheme =
-                  storedScheme === "light"
-                    ? "dark"
-                    : storedScheme === "dark"
-                      ? "system"
-                      : "light";
+                // Advance the cycle, but skip "system" if it would produce
+                // the same effective scheme (e.g. OS preference is dark and
+                // we're already showing dark → clicking "system" stays dark).
+                let next: ColorScheme;
+                if (storedScheme === "light") {
+                  next = "dark";
+                } else if (storedScheme === "dark") {
+                  next = "system";
+                } else {
+                  next = "light";
+                }
+                if (
+                  next === "system" &&
+                  effectiveScheme("system") === effective
+                ) {
+                  next = "light";
+                }
                 setColorScheme(next);
               }}
               className="mt-3 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-body-medium-12 text-body-light transition-colors hover:bg-bg dark:hover:bg-white/5"
